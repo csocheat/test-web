@@ -3,6 +3,7 @@
 import axios from "axios";
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { headers } from "next/headers";
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -51,7 +52,9 @@ export default function Home() {
       const response = await axios.post('https://dev.tovtrip.com/usersvc/api/v1/auth/login', {
         email,
         password,
-      }, { withCredentials : true});
+      }, { withCredentials : true, headers : {
+        apikey: "037cb34d-c5ee-4169-b2fd-bec049f77ecf"
+      }});
       console.log(response.data);
       // Redirect or perform additional actions on successful login
     } catch (error) {
