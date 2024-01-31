@@ -1,0 +1,73 @@
+#!/usr/bin/env node
+
+/**
+ * This tool is used to increase the version in
+ * package.json based on semantic version format.
+ * 
+ * Author: Socheat CHEA <socheat.chea@tovtrip.com>
+ * Copyright: 2023@tovtrip 
+ */
+
+const fs = require('fs');
+const path = require('path');
+const packageJsonPath = path.join(__dirname, '..', 'package.json');
+const packageJson = require(packageJsonPath);
+
+const handleVersionIncrement = (versionChoice) => {
+    const versionSegments = currentVersion.split('.').map(Number);
+
+    switch (versionChoice) {
+        case 'rebuild':
+          versionSegments[3]++;
+          break;
+        case 'patch':
+            versionSegments[2]++;
+            versionSegments[3] = 0;
+            break;
+        case 'minor':
+            versionSegments[1]++;
+            versionSegments[2] = 0;
+            break;
+        case 'major':
+            versionSegments[0]++;
+            versionSegments[1] = 0;
+            versionSegments[2] = 0;
+            break;
+        default:
+            console.error('Invalid version rule. Usage: tool.js <rebuild|patch|minor|major>');
+            process.exit(1);
+    }
+
+    newVersion = versionSegments.join('.');
+    packageJson.version = newVersion;
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    console.log(`Version in package.json updated to ${newVersion}`);
+    process.exit(0);
+}
+
+const currentVersion = packageJson.version;
+let newVersion;
+
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+const input = process.argv[2];
+if (!input) {
+  readline.question('Please choose increment type: ( rebuild | patch | minor | major ): ', (answer) => {
+    readline.close();
+    handleVersionIncrement(answer);
+  });
+} else {
+  if (input && /^\d+\.\d+\.\d+\.\d+$/.test(input)) {
+    // If a specific version is provided as a command line argument
+    packageJson.version = input;
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    console.log(`Version in package.json updated to ${input}`);
+    process.exit(0);
+  }else{
+    handleVersionIncrement(input);
+  }
+}
+

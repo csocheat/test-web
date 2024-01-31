@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+
+/**
+ * This tool is used to auto increase the version in
+ * package.json base on docker registry version
+ * 
+ * husky : 8.0.0
+ * Author: Socheat CHEA <socheat.chea@tovtrip.com>
+ * Copyright: 2023@tovtrip 
+ */
+const { execSync, spawnSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const semverScriptPath = path.join(__dirname, 'semver');
+
+const checkAvailableVersion =() => {
+  const rootPath = path.resolve(__dirname, '..');
+  const packageJsonPath = path.join(rootPath, 'package.json');
+  const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf-8');
+  const packageJson = JSON.parse(packageJsonContent);
+  const { name, version } = packageJson;
+  const command = `curl -s -u "readonly:readonly" "https://nexus.tovtrip.com/repository/tovtrip-docker/v2/repository/tovtrip-docker/${name}/tags/list"`;
+  const response = execSync(command, { encoding: 'utf-8' });
+  const tags = JSON.parse(response).tags
+  if(!tags){
+    const result = spawnSync(semverScriptPath, [version], { stdio: 'inherit' });
+    if (result.status !== 0) {
+      console.error('Increment failed.');
+      process.exit(result.status || 1);
+    }
+    return { exist: true, name, version }
+  }else{
+    const exist = JSON.parse(response).tags.includes(version);
+    if (exist) {
+      const avbleVers = findNextAvailableVersion(response, version)
+      const result = spawnSync(semverScriptPath, [avbleVers], { stdio: 'inherit' });
+      if (result.status !== 0) {
+        console.error('Increment failed.');
+        process.exit(result.status || 1);
+      }
+      checkAvailableVersion()
+    }
+    return { exist, name, version }
+  }
+}
+
+
+const findNextAvailableVersion = (versions, currentVersion) => {
+  const targetSegments = currentVersion.split(".").map(Number);
+  const targetPrefix = targetSegments.slice(0, 3).join(".");
+  let nextSuffix = targetSegments[3];
+
+  while (versions.includes(`${targetPrefix}.${nextSuffix}`)) {
+    nextSuffix++;
+  }
+
+  return `${targetPrefix}.${nextSuffix}`;
+}
+
+
+
+
+checkAvailableVersion()

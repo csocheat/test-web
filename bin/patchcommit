@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+/**
+ * This tool is used to auto patch commit with expected build version
+ * which was changed by pre-commit in package.json
+ * 
+ * husky : 8.0.0
+ * Author: Socheat CHEA <socheat.chea@tovtrip.com>
+ * Copyright: 2023@tovtrip 
+ */
+const fs = require('fs');
+const path = require('path');
+const packageJson = require(path.join(__dirname, '..', 'package.json'));
+
+const [_node, _app, ...args] = process.argv;
+const commitMsgFile = args[0]
+if (fs.existsSync(commitMsgFile)) {
+  let commitMsg = fs.readFileSync(commitMsgFile, 'utf-8').trim();
+  commitMsg = `${commitMsg} - Version : ${packageJson.version}`;
+  fs.writeFileSync(commitMsgFile, commitMsg);
+}
