@@ -35,7 +35,10 @@ export default function Home() {
   const handleLogout = async () => {
     try {
       const response = await axios.post(`${url}/auth/web/logout`, {}, {
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          apikey: "037cb34d-c5ee-4169-b2fd-bec049f77ecf"
+        }
       });
       console.log(response.status);
       console.log(response.data)
@@ -69,19 +72,20 @@ export default function Home() {
   const handleGoogleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     
-    try {
-      const response = await axios.get('https://dev.tovtrip.com/usersvc/api/v1/auth/google');
-      if(response.status === 200 && response.data){
-        console.log(response.data.data.redirectUrl);
-        window.location.href = response.data.data.redirectUrl;
-      }else {
-        console.error('Failed to initiate Google authentication:', response.data.error);
+    // try {
+    //   const response = await axios.get('https://dev.tovtrip.com/usersvc/api/v1/auth/google');
+    //   if(response.status === 200 && response.data){
+    //     console.log(response.data.data.redirectUrl);
+    //     window.location.href = response.data.data.redirectUrl;
+    //   }else {
+    //     console.error('Failed to initiate Google authentication:', response.data.error);
         
-      }
-    } catch (error) {
-      console.error('Error during Google authentication initiation:', error);
+    //   }
+    // } catch (error) {
+    //   console.error('Error during Google authentication initiation:', error);
       
-    }
+    // }
+    window.location.href = `${url}/auth/google?callback=${url}/home`;
   };
 
 
