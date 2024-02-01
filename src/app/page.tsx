@@ -10,12 +10,15 @@ export default function Home() {
   const [email, setEmail] = useState('chea.socheat@icloud.com');
   const [password, setPassword] = useState('P@ss@194!');
 
-
+  // const url = "http://localhost:3001"
+  const url = "https://dev.tovtrip.com/usersvc/api/v1"
   useEffect(() => {
     // Check if user is already logged in
     const checkLoggedIn = async () => {
       try {
-        const response = await axios.get('https://dev.tovtrip.com/usersvc/api/v1/users/me', { withCredentials: true });
+        const response = await axios.get(`${url}/users/me`, { withCredentials: true, headers : {
+          apikey: "037cb34d-c5ee-4169-b2fd-bec049f77ecf"
+        } });
         const status = response.status;
         if(status){
           setLoggedIn(true);
@@ -31,7 +34,7 @@ export default function Home() {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post('https://dev.tovtrip.com/usersvc/api/v1/auth/web/logout', {}, {
+      const response = await axios.post(`${url}/auth/web/logout`, {}, {
         withCredentials: true
       });
       console.log(response.status);
@@ -49,7 +52,7 @@ export default function Home() {
     e.preventDefault();
 
     try {
-      const response = await axios.post('https://dev.tovtrip.com/usersvc/api/v1/auth/login', {
+      const response = await axios.post(`${url}/auth/login`, {
         email,
         password,
       }, { withCredentials : true, headers : {
