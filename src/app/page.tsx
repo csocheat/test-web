@@ -69,23 +69,17 @@ export default function Home() {
   };
 
 
+  const handleFacebookLogin = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    window.location.href = `${url}/auth/facebook`
+  } 
   const handleGoogleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    
-    // try {
-    //   const response = await axios.get('https://dev.tovtrip.com/usersvc/api/v1/auth/google');
-    //   if(response.status === 200 && response.data){
-    //     console.log(response.data.data.redirectUrl);
-    //     window.location.href = response.data.data.redirectUrl;
-    //   }else {
-    //     console.error('Failed to initiate Google authentication:', response.data.error);
-        
-    //   }
-    // } catch (error) {
-    //   console.error('Error during Google authentication initiation:', error);
-      
-    // }
     window.location.href = `${url}/auth/google?callback=${url}/home`;
+  };
+  const handleAppleLogin = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    window.location.href = `${url}/auth/apple?callback=${url}`;
   };
 
 
@@ -120,6 +114,8 @@ export default function Home() {
       <div>
         <h2>Social Login</h2>
         <button onClick={handleGoogleLogin}>Google</button>
+        <button onClick={handleFacebookLogin}>Facebook</button>
+        <button onClick={handleAppleLogin}>Apple</button>
       </div>
     </div>
   );
