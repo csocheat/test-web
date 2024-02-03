@@ -81,7 +81,7 @@ export default function Home() {
   };
   const handleAppleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    window.location.href = `${url}/auth/apple?callback=${url}`;
+    window.location.href = `${url}/auth/apple?callback=${callbackurl}`;
   };
 
 
